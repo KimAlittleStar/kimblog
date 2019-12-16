@@ -1,5 +1,8 @@
 # 单个MakeFile管理项目(跨平台)
 
+-----------
+### ***阅读本文,你应该要拥有基础的linux知识和基本的makefile知识***
+-----------
   - ***摘要**:使用一个MakeFile就可以管理整个项目,新建项目时只需要将模板Make File移动至新项目根目录即可;Windows(MinGw),Linux(GCC)系统实测可用,理论上支持makefile的所有平台皆可使用;同时配置对应变量即可实现 C / C++ 嵌入式C 的项目管理;*
     
   - ***局限**:某一种项目只能自动导入某个单一后缀的源文件(头文件没有影响);例如C++ 只能识别到`*.cpp`的文件,对于 `*.c` 类型并不能识别;*  
@@ -38,5 +41,62 @@
     - 但是单个makefile现在网络上大多数都是需要你自己手动加入文件路径的makefile,作为懒人的我,肯定不想这样啦,于是,就有了这边文章;
    
 ## 2. 单个makefile管理项目思维拓展  
-    
+  - 单个makefile管理项目,首先需要递归的寻找到当前问件夹中的所有文件
+  - 依次找到每个源文件对应的需要h文件,并且建立对应关系
+  - 定义编译器宏,文件后缀宏,等等为跨平台做良好接口
+  - 自定义复制文件结构将所有的中间文件生成至build文件夹中并保持原有文件结构方便查看
+  - 定义clean伪目标,清理中间文件
+  - 定义各种伪目标清理build文件夹,清理可执行文件等
+
 ## 3. makefile源码分析  
+ - 接下来我会使用基础步骤由最终的目标文件开始介绍,逐次的转向内部实现;
+  ```makefile
+  #指定AllLibs为终极目标 即:最新的Bin 
+  AllLibs:$(Bin)
+  
+  #生成文件的最终表达式
+  $(Bin) : $(OBJS)  
+		@echo bulding....
+		@$(COMPILER) $(OBJS) $(ARGS)  $(COMPILERFLAG) $(Bin)
+		@echo created file: $(target)
+  ```
+  COMPILER:编译器的宏定义,展开后一般为gcc或g++,当然也可以自己定义
+  ```makefile
+  COMPILERFLAG = 
+  #条件编译使得其满足C项目 以及 C++项目
+  ifeq ($(TYPE),C)		#如果TYPE为"C" 那么COMPILER = gcc
+		COMPILER := $(CC)
+		COMPILERFLAG := $(CFLAGS)
+		PROJECTTYPE = .c
+	else
+  ifeq ($(TYPE),C++)	#如果TYPE为"C++" 那么COMPILER = g++
+		COMPILER := $(CXX)
+		COMPILERFLAG := $(CXXFLAGS)
+		PROJECTTYPE = .cpp
+  else
+  ifeq ($(TYPE),ARMC)	#如果TYPE为"ARMC",那么COMPLIER = gcc 实际上这里应该是arm-gcc交叉编译链的gcc
+		COMPILER := $(CC)
+		COMPILERFLAG := $(CFLAGS)
+		PROJECTTYPE = .c
+  else					#3个都不是,所有设置清空
+		COMPILER :=
+		COMPILERFLAG := 
+		PROJECTTYPE := 
+  endif
+  endif
+  endif
+  ```
+  - OBJS的生成与关系
+  ```makefile
+  #处理得到*.o 后缀文件名
+  OBJS := $(patsubst %$(PROJECTTYPE),%.o, $(buildPath))  
+  
+  #对于include中的*.d文件，只要里面任意有一个文件被修改，那么就会触发此规则生成一个新的  *.o文件
+  %.o: %.d
+  	@echo compile $(patsubst %.d,%$(PROJECTTYPE),$(subst build/,,$<)) 
+  	@$(COMPILER) -c $(patsubst %.d,%$(PROJECTTYPE),$(subst build/,,$<)) $  (DEBUG) $(DEF) $(INCLUDE_PATH) $(ARGS) $(COMPILERFLAG) $@ 
+  
+  include $(buildPath:$(PROJECTTYPE)=.d)
+
+  ```
+  - 
