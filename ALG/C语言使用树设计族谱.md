@@ -1,5 +1,10 @@
 # C语言使用树设计族谱  
 
+## 完整代码地址: [Github](https://github.com/KimAlittleStar/FamilyTree)  
+  
+ 本项目可使用vscode 打开并编译,详情请参考环境搭建教程:[教程链接](https://github.com/KimAlittleStar/vscode_c_demo)
+---
+
 ## 问题描述
  **家属关系查询系统**  
  1. 问题描述：用树结构表示你所在家族的家谱关系，实现家族信息的管理与查询。
