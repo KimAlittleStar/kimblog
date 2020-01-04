@@ -18,8 +18,7 @@
  
 ## 1. 在Linux安装Git
  第一步当然是需要有一个Linux系统咯~~,这里怎么装linux系统和装什么linux系统我就不说啦.这个网上教程一搜一大把,简单介绍下我用的linux,是window10的WindowsLinuxSubsystem - **[ubuntu 18.04LTS](https://www.microsoft.com/zh-cn/p/ubuntu-1804-lts/9n9tngvndl3q?activetab=pivot:overviewtab)** ;  
- ![WSLlinux截图](https://i.niupic.com/images/2019/12/13/_267.jpg)  
-  
+  [![l0R2MF.md.jpg](https://s2.ax1x.com/2020/01/04/l0R2MF.md.jpg)](https://imgchr.com/i/l0R2MF)
  安装好linux后,第一件事当然是更换源咯.因为ubuntu官方自带的源服务器在国外,然后你懂的~  
 
  我们使用
@@ -123,8 +122,6 @@
 - 安全性  
   一旦将你的个人电脑暴露到公网当中那么就不得不考虑 `安全的问题` ,而且如果你真正在使用你自己搭建的远程仓库的时候会发现你每次操作都需要输入密码,不仅很繁琐,而且在某些特定的时候还会面临选择问题;
 
-至此,我们已经可以在世界的任何一个角落访问你的远程仓库了,但是还有很多繁琐和不安全的隐患在;那么这个时候请参考第3节
+至此,我们已经可以在世界的任何一个角落访问你的远程仓库了,但是还有很多繁琐和不安全的隐患在;那么这个时候请参考 git的进阶配置
 
 *****
-
-## 3. 让这种感觉变得更爽

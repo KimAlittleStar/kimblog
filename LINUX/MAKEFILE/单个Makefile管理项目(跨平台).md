@@ -96,7 +96,78 @@
   	@echo compile $(patsubst %.d,%$(PROJECTTYPE),$(subst build/,,$<)) 
   	@$(COMPILER) -c $(patsubst %.d,%$(PROJECTTYPE),$(subst build/,,$<)) $  (DEBUG) $(DEF) $(INCLUDE_PATH) $(ARGS) $(COMPILERFLAG) $@ 
   
-  include $(buildPath:$(PROJECTTYPE)=.d)
+  include $(buildPath:$(PROJECTTYPE)=.d) # 这句话很重要,你可以编译之后打开.d文件你就明白啦
 
   ```
-  - 
+  - 默认的主要表达式
+  ```makefile
+  #生成文件的最终表达式
+  $(Bin) : $(OBJS)  
+    @echo bulding....
+    @$(COMPILER) $(OBJS) $(ARGS)  $(COMPILERFLAG) $(Bin)
+    @echo created file: $(target)	
+  ```
+  上面有一行
+  ```makefile
+  #指定AllLibs为终极目标 即:最新的Bin 
+  AllLibs:$(Bin)
+  ```
+  也就是说 获得最新的 Bin是默认目标,依存为 Objs的诸多文件,而生成途径 就是使用之间我们生成的 OBJS 的*.o文件链接起来生成 target;
+
+
+  - 其他目标任务
+  ```makefile
+  #删除所有编译带来的文件
+.PHONY : clean  
+clean:clean_out clean_build clean_bin
+
+#删除 *.o文件
+.PHONY : clean_out  
+clean_out:
+	    @echo 'removeing all *.o file ...'
+	    @$(RM) -r $(pes_parent_dir)/build/*.o
+	    @echo 'done'
+
+#删除 build 文件夹
+.PHONY : clean_build  
+clean_build:
+	    @echo 'removeing all build temp file ...'
+	    @$(RM) -r $(pes_parent_dir)/build
+	    @echo 'done'
+
+#删除 可执行文件
+.PHONY : clean_bin  
+clean_bin:
+	    @echo 'removeing executable file ...'
+	    @$(RM) $(Bin)
+	    @echo 'done'
+
+		
+#重新编译
+.PHONY : rebuild
+rebuild: clean_out AllLibs
+
+#显示帮助
+.PHONY : help
+help:
+		@echo "本makefile 一共实现了以下几种命令模式"
+		@echo "AllLibs \t\t默认的命令,含义为编译当前项目并输出可执行文件 $(target)\n"
+		@echo "clean \t\t清理命令,删除由makefile带来的所有文件\n"
+		@echo "clean_out \t\t清理中间文件命令,删除由编译带来的所有文件 *.o\n"
+		@echo "clean_build \t\t清理中间文件命令,删除编译临时文件夹 /build\n"
+		@echo "clean_bin \t\t删除可执行文件 $(target)\n"
+		@echo "rebuild \t\t重新编译\n"
+		@echo "|----------------------------------------------|"
+		@echo "内建一些逻辑,以及传参即可改变\n"
+		@echo "ARGS \t\t用户自我追加的一些编译参数,例如多线程中需要加入 -lpthread 参数\n"
+		@echo "TYPE \t\t用于确认当前项目是C++ 项目还是 C语言项目 (默认为C) 如果是C++ 那么自动编译*.cpp文件 ,如果是 C 那么自动编译*.c文件,暂不支持混合添加\n"
+		@echo "target \t\t用户自定义生成的可执行文件名,例如windows下 生成obj.exe Linux下生成 obj.out\n"
+		@echo "DEBUG \t\t一般传入 -g 表示支持单步调试,\n"
+		@echo "PREDEF \t\t预先定义一些宏,在程序中起到开关裁剪的作用\n"
+		@echo "Please check the console encoding format in case of garbled codes. The initial encoding format of this makefile is UTF8\n"
+
+
+  ```
+
+
+  最后makefile 项目已经上传到 GitHub [点击这里](https://github.com/KimAlittleStar/vscode_c_demo)
