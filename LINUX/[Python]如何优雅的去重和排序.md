@@ -68,7 +68,7 @@ class stu(object):
 stuSet = set()
 stuList = []
 
-for i in range(0, 10):  # if you want use random plase import radom first
+for i in range(0, 10):  # if you want use random plase import random first
     temStu = stu(random.randint(1, 6), "bob"+str(random.randint(1, 4)))
     stuSet.add(temStu)
     stuList.append(temStu)
